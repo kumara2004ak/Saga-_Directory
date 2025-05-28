@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Inventory - SAM Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0">
+        <div class="flex items-center justify-between h-16 px-6 border-b">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-building text-green-400 text-xl"></i>
+                <span class="text-xl font-bold text-gray-800">SaaS Management</span>
+            </div>
+            <button id="closeSidebar" class="lg:hidden">
+                <i class="fas fa-times text-gray-600"></i>
+            </button>
+        </div>
+        
+        <nav class="mt-6">
+            <div class="px-6 mb-4">
+            </div>
+            <ul class="space-y-1 px-3">
+                <li>
+                    <a href="index.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-home mr-3"></i>
+                        Dashboard 
+                    </a>
+                </li>
+                <li>
+                    <a href="application.html" class="flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-md">
+                        <i class="fas fa-box mr-3"></i>
+                        Application & License Inventory
+                    </a>
+                </li>
+                <li>
+                    <a href="financial.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-dollar-sign mr-3"></i>
+                        Renewal & Cost Management
+                    </a>
+                </li>
+                <li>
+                    <a href="security.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-shield-alt mr-3"></i>
+                        Shadow IT & Security
+                    </a>
+                </li>
+                <li>
+                    <a href="insights.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-users mr-3"></i>
+                        User & Activity Insights
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:pl-64">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="flex items-center justify-between h-16 px-6">
+                <button id="openSidebar" class="lg:hidden">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </button>
+                
+                <div class="flex-1 max-w-md mx-4">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" placeholder="Search applications..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="relative">
+                        <button id="userMenuBtn" class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400"></i>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                            <hr class="my-1">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Log out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Inventory Content -->
+        <main class="p-6">
+            <div class="mb-6">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-3xl font-bold text-gray-900">Application & License Management</h1>
+                    <div class="flex space-x-3">
+                        <div class="relative">
+                            <button id="categoryBtn" class="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                                Category: All
+                                <i class="fas fa-chevron-down ml-2"></i>
+                            </button>
+                            <div id="categoryMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                <a href="#" onclick="filterByCategory('All')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">All</a>
+                                <a href="#" onclick="filterByCategory('Productivity')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Productivity</a>
+                                <a href="#" onclick="filterByCategory('CRM')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">CRM</a>
+                                <a href="#" onclick="filterByCategory('Communication')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Communication</a>
+                                <a href="#" onclick="filterByCategory('Design')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Design</a>
+                            </div>
+                        </div>
+                        <button id="openModal" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700">
+                            Add Application
+                        </button>
+                        <button id="openLicenseModal" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700">
+                            Assign Licenses
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Licensed Applications</p>
+                            <p class="text-3xl font-bold text-gray-900">239</p>
+                            <p class="text-sm text-green-500">96.8% of total apps</p>
+                        </div>
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <i class="fas fa-box text-green-500 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">License Utilization</p>
+                            <p class="text-3xl font-bold text-gray-900">87%</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 87%"></div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <i class="fas fa-chart-line text-green-500 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Expiring Soon</p>
+                            <p class="text-3xl font-bold text-gray-900">12</p>
+                            <p class="text-sm text-red-600">Next 30 days</p>
+                        </div>
+                        <div class="p-3 bg-red-100 rounded-full">
+                            <i class="fas fa-clock text-red-500 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Shadow IT Detected</p>
+                            <p class="text-3xl font-bold text-gray-900">8</p>
+                            <p class="text-sm text-yellow-600">Requires attention</p>
+                        </div>
+                        <div class="p-3 bg-yellow-100 rounded-full">
+                            <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications Table -->
+            <div class="bg-white rounded-lg shadow-sm border">
+                <div class="px-6 py-4 border-b">
+                    <h3 class="text-lg font-semibold text-gray-900">Application Inventory</h3>
+                    <p class="text-sm text-gray-600">Comprehensive list of all applications with license and usage information</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="applicationsTable" class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Users</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monthly Cost</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Level</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">Microsoft Office 365</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Productivity</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">450</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$12,500</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Active</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Low</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="relative">
+                                        <button class="text-gray-400 hover:text-gray-600" onclick="toggleActionMenu(this)">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                            <a href="#" onclick="openModal('appDetailModal')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                <i class="fas fa-eye mr-2"></i>View Details
+                                            </a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Manage Licenses</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">Salesforce</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">CRM</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">120</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$8,900</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Active</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Low</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="relative">
+                                        <button class="text-gray-400 hover:text-gray-600" onclick="toggleActionMenu(this)">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                            <a href="#" onclick="openModal('appDetailModal')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                <i class="fas fa-eye mr-2"></i>View Details
+                                            </a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Manage Licenses</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">Slack</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Communication</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">380</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$3,200</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Active</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Medium</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="relative">
+                                        <button class="text-gray-400 hover:text-gray-600" onclick="toggleActionMenu(this)">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                            <a href="#" onclick="openModal('appDetailModal')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                <i class="fas fa-eye mr-2"></i>View Details
+                                            </a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Manage Licenses</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">Adobe Creative Suite</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Design</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">45</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$5,600</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Expiring</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Low</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="relative">
+                                        <button class="text-gray-400 hover:text-gray-600" onclick="toggleActionMenu(this)">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                            <a href="#" onclick="openModal('appDetailModal')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                <i class="fas fa-eye mr-2"></i>View Details
+                                            </a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Manage Licenses</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-medium text-gray-900">Unknown App</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Unknown</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">15</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$0</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Shadow IT</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">High</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <div class="relative">
+                                        <button class="text-gray-400 hover:text-gray-600" onclick="toggleActionMenu(this)">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                            <a href="#" onclick="openModal('appDetailModal')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                <i class="fas fa-eye mr-2"></i>View Details
+                                            </a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Edit</a>  
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Manage Licenses</a>
+                                        </div>
+                                    </div>
+                                </td>
+                                
+<!-- Assign License Modal -->
+    <div id="modalss" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full overflow-y-auto max-h-[90vh]">
+            <form>
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 class="text-lg font-semibold">Assign License</h3>
+                    <button type="button" id="closeModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         <div>
+                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">License Type *</label>
+                            <select id="category" name="category" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select License Type</option>
+                                <option value="Productivity">Standard License</option>
+                                <option value="CRM">Premium License</option>
+                                <option value="Communication">Enterprise License</option>
+                                <option value="Design">Trail License</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Software Product *</label>
+                            <select id="category" name="category" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select Software</option>
+                                <option value="Productivity">Microsoft 364</option>
+                                <option value="CRM">Adobe Creative Cloud</option>
+                                <option value="Communication">AutoCadd</option>
+                                <option value="Design">Figma</option>
+                            </select>
+                        </div>
+                        <!-- License Key -->
+                        <div class="md:col-span-2">
+                            <label for="licenseKey" class="block text-sm font-medium text-gray-700 mb-2">
+                                License Key <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="licenseKey" name="licenseKey" required
+                                   placeholder="Enter license key"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">User Assignment</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                             <div>
+                            <label for="user" class="block text-sm font-medium text-gray-700 mb-2">Assign to User *</label>
+                            <select id="user" name="user" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select User</option>
+                                <option value="user1">Gokul Velmurugan(gokul@sagasoft.io)</option>
+                                <option value="user2">Senkathir Selvan(Senkathir@sagasoft.io)</option>
+                                <option value="user3">Vasanth Kumar(vasanth@sagasoft.io)</option>
+                                <option value="user4">Bharathi Ragav(bharathi@sagasoft.io)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="team" class="block text-sm font-medium text-gray-700 mb-2">Assign to Group *</label>
+                            <select id="team" name="team" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select Group</option>
+                                <option value="group1">FrontEnd Team</option>
+                                <option value="group2">BackEnd Team</option>
+                                <option value="group3">HR Team</option>
+                                <option value="group4">Production Team</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="employee id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Employee ID
+                            </label>
+                            <input type="text" id="employeeid" name="employeeid" required
+                                   placeholder="Enter Employee ID"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                        </div>
+                        <div class="md:col-span-2">    
+
+<!-- Add Application Modal -->
+    <div id="modalss" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full overflow-y-auto max-h-[90vh]">
+            <form>
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 class="text-lg font-semibold">Assign License</h3>
+                    <button type="button" id="closeModal" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         <div>
+                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">License Type *</label>
+                            <select id="category" name="category" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select License Type</option>
+                                <option value="Productivity">Standard License</option>
+                                <option value="CRM">Premium License</option>
+                                <option value="Communication">Enterprise License</option>
+                                <option value="Design">Trail License</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Software Product *</label>
+                            <select id="category" name="category" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select Software</option>
+                                <option value="Productivity">Microsoft 364</option>
+                                <option value="CRM">Adobe Creative Cloud</option>
+                                <option value="Communication">AutoCadd</option>
+                                <option value="Design">Figma</option>
+                            </select>
+                        </div>
+                        <!-- License Key -->
+                        <div class="md:col-span-2">
+                            <label for="licenseKey" class="block text-sm font-medium text-gray-700 mb-2">
+                                License Key <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="licenseKey" name="licenseKey" required
+                                   placeholder="Enter license key"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">User Assignment</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                             <div>
+                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Assign to User *</label>
+                            <select id="category" name="category" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select User</option>
+                                <option value="user1">Gokul Velmurugan(gokul@sagasoft.io)</option>
+                                <option value="user2">Senkathir Selvan(Senkathir@sagasoft.io)</option>
+                                <option value="user3">Vasanth Kumar(vasanth@sagasoft.io)</option>
+                                <option value="user4">Bharathi Ragav(bharathi@sagasoft.io)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Assign to Group *</label>
+                            <select id="category" name="category" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select Group</option>
+                                <option value="group1">FrontEnd Team</option>
+                                <option value="group2">BackEnd Team</option>
+                                <option value="group3">HR Team</option>
+                                <option value="group4">Production Team</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="employee id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Employee ID
+                            </label>
+                            <input type="text" id="employeeid" name="employeeid" required
+                                   placeholder="Enter Employee ID"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="costcenter" class="block text-sm font-medium text-gray-700 mb-2">
+                                Cost Center
+                            <input type="text" id="costcenter" name="costcenter" required
+                                   placeholder="Enter Cost Center"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">License Details</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="Start" class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                                <input type="date" id="Start" name="Start"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="End" class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                                <input type="date" id="End" name="End"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="priorityLevel" class="block text-sm font-medium text-gray-700 mb-2">Priority Level</label>
+                                <select id="priorityLevel" name="priorityLevel"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                               <!-- Number of Seats -->
+                        <div>
+                            <label for="seats" class="block text-sm font-medium text-gray-700 mb-2">
+                                Number of Seats
+                            </label>
+                            <input type="number" id="seats" name="seats" min="1" max="1000" value="1"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                        </div>
+                                                <!-- License Cost -->
+                        <div>
+                            <label for="cost" class="block text-sm font-medium text-gray-700 mb-2">
+                                License Cost ($)
+                            </label>
+                            <input type="number" id="cost" name="cost" min="0" step="0.01"
+                                   placeholder="0.00"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                        </div>
+
+                        <!-- Auto Renewal -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="autoRenewal" name="autoRenewal"
+                                   class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                            <label for="autoRenewal" class="ml-2 block text-sm text-gray-700">
+                                Auto Renewal
+                            </label>
+                        </div>
+                        </div>
+                    </div>
+
+                <!-- Additional Information -->
+                <div class="pb-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Additional Information</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Notes -->
+                        <div>
+                            <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+                                Notes
+                            </label>
+                            <textarea id="notes" name="notes" rows="4"
+                                      placeholder="Enter any additional notes or comments..."
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-vertical"></textarea>
+                        </div>
+
+                        <!-- Notification Settings -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="emailNotification" name="emailNotification" checked
+                                       class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                <label for="emailNotification" class="ml-2 block text-sm text-gray-700">
+                                    Send email notification to user
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="checkbox" id="reminderNotification" name="reminderNotification"
+                                       class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                <label for="reminderNotification" class="ml-2 block text-sm text-gray-700">
+                                    Set expiration reminder
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                    <button type="submit" 
+                            class="flex-1 sm:flex-none bg-primary text-white px-6 py-3 rounded-md font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors">
+                        Assign License
+                    </button>
+                    
+                    <button type="button" id="saveAsDraft"
+                            class="flex-1 sm:flex-none bg-gray-200 text-gray-800 px-6 py-3 rounded-md font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+                        Save as Draft
+                    </button>
+                    
+                    <button type="button" id="resetForm"
+                            class="flex-1 sm:flex-none bg-white text-gray-700 px-6 py-3 rounded-md font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+                        Reset Form
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <label for="costcenter" class="block text-sm font-medium text-gray-700 mb-2">
+        Cost Center
+        <input type="text" id="costcenter" name="costcenter" required
+        placeholder="Enter Cost Center"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+    </div>
+</div>
+</div>
+
+<div class="border-t pt-6">
+    <h4 class="text-lg font-medium text-gray-900 mb-4">License Details</h4>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+            <label for="Start" class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+            <input type="date" id="Start" name="Start"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+        </div>
+        <div>
+            <label for="End" class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+            <input type="date" id="End" name="End" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+        </div>
+        <div>
+            <label for="priorityLevel" class="block text-sm font-medium text-gray-700 mb-2">Priority Level</label>
+            <select id="priorityLevel" name="priorityLevel"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                <option value="">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
+            </select>
+        </div>
+    <!-- Number of Seats -->
+        <div>
+            <label for="seats" class="block text-sm font-medium text-gray-700 mb-2">
+                Number of Seats
+            </label>
+            <input type="number" id="seats" name="seats" min="1" max="1000" value="1"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+        </div>
+    <!-- License Cost -->
+    <div>
+        <label for="cost" class="block text-sm font-medium text-gray-700 mb-2">
+            License Cost ($)
+        </label>
+        <input type="number" id="cost" name="cost" min="0" step="0.01"
+        placeholder="0.00"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+    </div>
+
+    <!-- Auto Renewal -->
+    <div class="flex items-center">
+        <input type="checkbox" id="autoRenewal" name="autoRenewal"
+        class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+        <label for="autoRenewal" class="ml-2 block text-sm text-gray-700">
+            Auto Renewal
+        </label>
+    </div>
+</div>
+</div>
+
+<!-- Additional Information -->
+    <div class="pb-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Additional Information</h2>
+        <div class="space-y-4">
+            <!-- Notes -->
+            <div>
+                <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+                    Notes
+                </label>
+                <textarea id="notes" name="notes" rows="4"
+                placeholder="Enter any additional notes or comments..."
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-vertical"></textarea>
+            </div>
+
+<!-- Notification Settings -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="flex items-center">
+            <input type="checkbox" id="emailNotification" name="emailNotification" checked
+            class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+            <label for="emailNotification" class="ml-2 block text-sm text-gray-700">
+                Send email notification to user
+            </label>
+        </div>
+                            
+        <div class="flex items-center">
+            <input type="checkbox" id="reminderNotification" name="reminderNotification"
+            class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+            <label for="reminderNotification" class="ml-2 block text-sm text-gray-700">
+                Set expiration reminder
+            </label>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- Form Actions -->
+    <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+        <button type="submit" 
+        class="flex-1 sm:flex-none bg-primary text-white px-6 py-3 rounded-md font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors">
+        Assign License
+        </button>
+                    
+        <button type="button" id="saveAsDraft" class="flex-1 sm:flex-none bg-gray-200 text-gray-800 px-6 py-3 rounded-md font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+            Save as Draft
+        </button>
+                    
+        <button type="button" id="resetForm" class="flex-1 sm:flex-none bg-white text-gray-700 px-6 py-3 rounded-md font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+            Reset Form
+        </button>
+    </div>
+</form>
+</div>
+</div>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Block Application</a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Investigate</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>  
+
+
+    <!-- Application Detail Modal -->
+    <div id="appDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between p-6 border-b">
+                <h3 class="text-lg font-semibold">Microsoft Office 365 - Application Details</h3>
+                <button onclick="closeModal('appDetailModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="flex space-x-4 mb-6">
+                    <button onclick="switchTab('overview')" class="tab-btn px-4 py-2 bg-green-600 text-white rounded-md">Overview</button>
+                    <button onclick="switchTab('licenses')" class="tab-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-md">Licenses</button>
+                    <button onclick="switchTab('usage')" class="tab-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-md">Usage</button>
+                    <button onclick="switchTab('security')" class="tab-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-md">Security</button>
+                </div>
+                
+                <div id="overview" class="tab-content">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                            <p class="text-gray-900">Productivity</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Active</span>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Active Users</label>
+                            <p class="text-gray-900">450</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Monthly Cost</label>
+                            <p class="text-gray-900">$12,500</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Vendor</label>
+                            <p class="text-gray-900">Microsoft Corporation</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Contract End Date</label>
+                            <p class="text-gray-900">March 15, 2024</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="licenses" class="tab-content hidden">
+                    <div class="space-y-4">
+                        <h4 class="font-medium text-gray-900">License Information</h4>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Total Licenses</p>
+                                <p class="text-2xl font-bold">500</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Assigned</p>
+                                <p class="text-2xl font-bold">450</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Available</p>
+                                <p class="text-2xl font-bold">50</p>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-green-600 h-3 rounded-full" style="width: 90%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600">90% utilization rate</p>
+                    </div>
+                </div>
+                
+                <div id="usage" class="tab-content hidden">
+                    <div class="space-y-4">
+                        <h4 class="font-medium text-gray-900">Usage Analytics</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Daily Active Users</p>
+                                <p class="text-xl font-bold">315</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Average Session Duration</p>
+                                <p class="text-xl font-bold">2.5 hours</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Peak Usage Time</p>
+                                <p class="text-xl font-bold">10:00 AM - 12:00 PM</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Most Used Feature</p>
+                                <p class="text-xl font-bold">Outlook</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="security" class="tab-content hidden">
+                    <div class="space-y-4">
+                        <h4 class="font-medium text-gray-900">Security Assessment</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Risk Level</p>
+                                <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Low</span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Last Security Scan</p>
+                                <p class="text-gray-900">3 days ago</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Compliance Status</p>
+                                <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Compliant</span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">SSO Enabled</p>
+                                <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Yes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Add Application Modal -->
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full overflow-y-auto max-h-[90vh]">
+            <form>
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 class="text-lg font-semibold">Add Application</h3>
+                    <button type="button" id="closeModal1" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Application Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="name" name="name" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                placeholder="e.g., Microsoft Office 365">
+                        </div>
+                        <div>
+                            <label for="vendor" class="block text-sm font-medium text-gray-700 mb-2">Vendor <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="vendor" name="vendor" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                placeholder="e.g., Microsoft Corporation">
+                        </div>
+                        <div>
+                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category <span class="text-red-500">*</span>
+                            </label>
+                            <select id="category" name="category" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select Category</option>
+                                <option value="Productivity">Productivity</option>
+                                <option value="CRM">CRM</option>
+                                <option value="Communication">Communication</option>
+                                <option value="Design">Design</option>
+                                <option value="Development">Development</option>
+                                <option value="Security">Security</option>
+                                <option value="Analytics">Analytics</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="version" class="block text-sm font-medium text-gray-700 mb-2">Version</label>
+                            <input type="text" id="version" name="version"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                placeholder="e.g., 2023">
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">License Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="totalLicenses" class="block text-sm font-medium text-gray-700 mb-2">Total Licenses 
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" id="totalLicenses" name="totalLicenses" required min="1"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    placeholder="e.g., 500">
+                            </div>
+                            <div>
+                                <label for="assignedLicenses" class="block text-sm font-medium text-gray-700 mb-2">Assigned Licenses</label>
+                                <input type="number" id="assignedLicenses" name="assignedLicenses" min="0"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    placeholder="e.g., 450">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">Financial Information</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="monthlyCost" class="block text-sm font-medium text-gray-700 mb-2">Monthly Cost 
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                    <input type="number" id="monthlyCost" name="monthlyCost" required min="0" step="0.01"
+                                        class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="annualCost" class="block text-sm font-medium text-gray-700 mb-2">Annual Cost</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                    <input type="number" id="annualCost" name="annualCost" min="0" step="0.01"
+                                        class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="billingCycle" class="block text-sm font-medium text-gray-700 mb-2">Billing Cycle</label>
+                                <select id="billingCycle" name="billingCycle"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">Select Cycle</option>
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="Quarterly">Quarterly</option>
+                                    <option value="Annual">Annual</option>
+                                    <option value="Biennial">Biennial</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">Renewal</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="renewalStart" class="block text-sm font-medium text-gray-700 mb-2">Renewal Start Date</label>
+                                <input type="date" id="renewalStart" name="renewalStart"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-greeen-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="renewalEnd" class="block text-sm font-medium text-gray-700 mb-2">Renewal End Date</label>
+                                <input type="date" id="renewalEnd" name="renewalEnd"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="autoRenewal" class="block text-sm font-medium text-gray-700 mb-2">Auto Renewal</label>
+                                <select id="autoRenewal" name="autoRenewal"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">Select Option</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                    <option value="Unknown">Unknown</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">Security & Compliance</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="ssoEnabled" class="block text-sm font-medium text-gray-700 mb-2">SSO Enabled
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <select id="ssoEnabled" name="ssoEnabled"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">Select Option</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                    <option value="Pending">Pending Setup</option>
+                                </select>
+                            </div>
+                             <div>
+                                <label for="ssoType" class="block text-sm font-medium text-gray-700 mb-2">SSO Type</label>
+                                <select id="ssoType" name="ssoType"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">Select Option</option>
+                                    <option value="Yes">Oauth</option>
+                                    <option value="No">SAML</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="riskLevel" class="block text-sm font-medium text-gray-700 mb-2">Risk Level</label>
+                                <select id="riskLevel" name="riskLevel"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">Select Risk Level</option>
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="description" name="description" rows="4"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            placeholder="Brief description of the application and its purpose..."></textarea>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between pt-6 border-t px-6 pb-6">
+                    <a href="application.html" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </a>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="saveDraft()" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Save as Draft
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-700">
+                            Add Application
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Assign License Modal (Popup Window) -->
+    <div id="licenseModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full overflow-y-auto max-h-[90vh]">
+            <form id="licenseForm">
+                <div class="flex items-center justify-between p-6 border-b">
+                    <h3 class="text-lg font-semibold">Assign License</h3>
+                    <button type="button" id="closeLicenseModalBtn" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="software" class="block text-sm font-medium text-gray-700 mb-2">Software Product
+                            <span class="text-red-500">*</span>
+                            </label>
+                            <select id="software" name="software" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select Software</option>
+                                <option value="microsoft365">Microsoft 365</option>
+                                <option value="adobe">Adobe Creative Cloud</option>
+                                <option value="autocad">AutoCAD</option>
+                                <option value="figma">Figma</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="licenseType" class="block text-sm font-medium text-gray-700 mb-2">License Type 
+                            <span class="text-red-500">*</span>
+                            </label>
+                            <select id="licenseType" name="licenseType" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <option value="">Select License Type</option>
+                                <option value="standard">Standard License</option>
+                                <option value="premium">Premium License</option>
+                                <option value="enterprise">Enterprise License</option>
+                                <option value="trial">Trial License</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="licenseKey" class="block text-sm font-medium text-gray-700 mb-2">
+                                License Key <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="licenseKey" name="licenseKey" required
+                                   placeholder="Enter license key"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors">
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">User Assignment</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="assignUser" class="block text-sm font-medium text-gray-700 mb-2">Assign to User 
+                                    <span class="text-red-500">*</span>
+                                </label>
+                                <select id="assignUser" name="assignUser" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">Select User</option>
+                                    <option value="user1">Gokul Velmurugan (gokul@sagasoft.io)</option>
+                                    <option value="user2">Senkathir Selvan (senkathir@sagasoft.io)</option>
+                                    <option value="user3">Vasanth Kumar (vasanth@sagasoft.io)</option>
+                                    <option value="user4">Bharathi Ragav (bharathi@sagasoft.io)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="assignGroup" class="block text-sm font-medium text-gray-700 mb-2">Assign to Group 
+                                    <span class="text-red-500">*</span> 
+                                </label>
+                                <select id="assignGroup" name="assignGroup" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                    <option value="">Select Group</option>
+                                    <option value="frontend">Frontend Team</option>
+                                    <option value="backend">Backend Team</option>
+                                    <option value="hr">HR Team</option>
+                                    <option value="production">Production Team</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="costCenter" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Cost Center
+                                </label>
+                                <input type="text" id="costCenter" name="costCenter"
+                                       placeholder="Enter Cost Center"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-blue-500 transition-colors">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="border-t pt-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">License Details</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="startDate" class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                                <input type="date" id="startDate" name="startDate"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="endDate" class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                                <input type="date" id="endDate" name="endDate"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label for="priorityLevel" class="block text-sm font-medium text-gray-700 mb-2">Priority Level</label>
+                                <select id="priorityLevel" name="priorityLevel"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="seats" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Number of Seats
+                                </label>
+                                <input type="number" id="seats" name="seats" min="1" max="1000" value="1"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            </div>
+                            <div>
+                                <label for="cost" class="block text-sm font-medium text-gray-700 mb-2">
+                                    License Cost ($)
+                                </label>
+                                <input type="number" id="cost" name="cost" min="0" step="0.01"
+                                       placeholder="0.00"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="autoRenewal" name="autoRenewal"
+                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                <label for="autoRenewal" class="ml-2 block text-sm text-gray-700">
+                                    Auto Renewal
+                                </label>
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <div class="border-t pt-6">
+                        <h4 class="text-lg font-medium text-gray-900 mb-4">Additional Information</h4>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Notes
+                                </label>
+                                <textarea id="notes" name="notes" rows="4"
+                                          placeholder="Enter any additional notes or comments..."
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-blue-500 transition-colors resize-vertical"></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="emailNotification" name="emailNotification" checked
+                                           class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                    <label for="emailNotification" class="ml-2 block text-sm text-gray-700">
+                                        Send email notification to user
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="reminderNotification" name="reminderNotification"
+                                           class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                                    <label for="reminderNotification" class="ml-2 block text-sm text-gray-700">
+                                        Set expiration reminder
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between pt-6 border-t px-6 pb-6">
+                    <a href="application.html" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </a>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="saveDraft()" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Save as Draft
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                            Assign License
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Open popup
+        document.addEventListener('DOMContentLoaded', function() {
+            const openBtn = document.getElementById('openLicenseModal');
+            const modal = document.getElementById('licenseModal');
+            const closeBtn = document.getElementById('closeLicenseModalBtn');
+
+            if (openBtn && modal) {
+                openBtn.addEventListener('click', function() {
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            if (closeBtn && modal) {
+                closeBtn.addEventListener('click', function() {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                });
+            }
+            // Close when clicking outside modal content
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            }
+            // Close with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+  
+    
+        function toggleActionMenu(button) {
+            const menu = button.nextElementSibling;
+            const allMenus = document.querySelectorAll('.absolute.right-0.mt-2');
+            
+            // Close all other menus
+            allMenus.forEach(m => {
+                if (m !== menu) m.classList.add('hidden');
+            });
+            
+            // Toggle current menu
+            menu.classList.toggle('hidden');
+        }
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.add('hidden'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => {
+                btn.classList.remove('bg-green-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.remove('hidden');
+            
+            // Add active class to selected tab button
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('bg-green-600', 'text-white');
+        }
+
+        // Close action menus when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.relative')) {
+                const allMenus = document.querySelectorAll('.absolute.right-0.mt-2');
+                allMenus.forEach(menu => menu.classList.add('hidden'));
+            }
+        });
+
+        // Modal functions
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function closeAllModals() {
+    const modals = document.querySelectorAll('[id$="Modal"]');
+    modals.forEach(modal => {
+        modal.classList.add('hidden');
+    });
+    document.body.style.overflow = 'auto';
+}
+const openBtn1 = document.getElementById('openModal');
+                const modal = document.getElementById('modal');
+                const closeBtn1 = document.getElementById('closeModal1');
+                const closeBtn3 = document.getElementById('closeModal1');
+
+                openBtn1.addEventListener('click', () => modal.classList.remove('hidden'));
+                closeBtn1.addEventListener('click', () => modal.classList.add('hidden'));
+                closeBtn3.addEventListener('click', () => modal.classList.add('hidden'));
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.classList.add('hidden');
+                });
+
+
+// Function to open the modal
+function openLicenseModal() {
+    const modal = document.getElementById('licenseModal');
+    modal.classList.remove('hidden');
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+}
+
+// Function to close the modal
+function closeLicenseModal() {
+    const modal = document.getElementById('licenseModal');
+    modal.classList.add('hidden');
+    // Restore body scroll
+    document.body.style.overflow = 'auto';
+}
+
+// Event listeners when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listener to the button that opens the modal
+    // Replace 'openModalBtn' with your actual button ID
+    const openModalBtn = document.getElementById('openLicenseModal');
+    if (openModalBtn) {
+        openModalBtn.addEventListener('click', openLicenseModal);
+    }
+
+    // Close modal when clicking the X button
+    const closeModalBtn = document.getElementById('closeModal');
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeLicenseModal);
+    }
+
+    // Close modal when clicking outside the modal content
+    const modal = document.getElementById('licenseModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeLicenseModal();
+            }
+        });
+    }
+
+    // Close modal when pressing Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('licenseModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                closeLicenseModal();
+            }
+        }
+    });
+
+    // Handle form submission
+    const licenseForm = document.getElementById('licenseForm');
+    if (licenseForm) {
+        licenseForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(licenseForm);
+            const data = Object.fromEntries(formData);
+            
+            // Here you can process the form data
+            console.log('License form data:', data);
+            
+            // Close modal after successful submission
+            closeLicenseModal();
+            
+            // Show success message (optional)
+            alert('License assigned successfully!');
+        });
+    }
+
+    // Handle Save as Draft button
+    const saveAsDraftBtn = document.getElementById('saveAsDraft');
+    if (saveAsDraftBtn) {
+        saveAsDraftBtn.addEventListener('click', function() {
+            const formData = new FormData(licenseForm);
+            const data = Object.fromEntries(formData);
+            
+            console.log('Saving as draft:', data);
+            alert('Draft saved successfully!');
+        });
+    }
+    
+
+    // Handle Reset Form button
+    const resetFormBtn = document.getElementById('resetForm');
+    if (resetFormBtn) {
+        resetFormBtn.addEventListener('click', function() {
+            licenseForm.reset();
+            console.log('Form reset');
+        });
+    }
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Application - SAM Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+        <!-- Add Application Content -->
+        <main class="p-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-900">Add New Application</h1>
+                    <p class="text-gray-600 mt-2">Add a new application to your software inventory with license and usage details.</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm border">
+                    <div class="px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold text-gray-900">Application Information</h3>
+                    </div>
+                    
+                    <form id="addApplicationForm" class="p-6 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Application Name *</label>
+                                <input type="text" id="name" name="name" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                       placeholder="e.g., Microsoft Office 365">
+                            </div>
+                            
+                            <div>
+                                <label for="vendor" class="block text-sm font-medium text-gray-700 mb-2">Vendor *</label>
+                                <input type="text" id="vendor" name="vendor" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                       placeholder="e.g., Microsoft Corporation">
+                            </div>
+                            
+                            <div>
+                                <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                                <select id="category" name="category" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Select Category</option>
+                                    <option value="Productivity">Productivity</option>
+                                    <option value="CRM">CRM</option>
+                                    <option value="Communication">Communication</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Development">Development</option>
+                                    <option value="Security">Security</option>
+                                    <option value="Analytics">Analytics</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="version" class="block text-sm font-medium text-gray-700 mb-2">Version</label>
+                                <input type="text" id="version" name="version"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                       placeholder="e.g., 2023">
+                            </div>
+                        </div>
+
+                        <div class="border-t pt-6">
+                            <h4 class="text-lg font-medium text-gray-900 mb-4">License Information</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label for="totalLicenses" class="block text-sm font-medium text-gray-700 mb-2">Total Licenses *</label>
+                                    <input type="number" id="totalLicenses" name="totalLicenses" required min="1"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                           placeholder="e.g., 500">
+                                </div>
+                                
+                                <div>
+                                    <label for="assignedLicenses" class="block text-sm font-medium text-gray-700 mb-2">Assigned Licenses</label>
+                                    <input type="number" id="assignedLicenses" name="assignedLicenses" min="0"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                           placeholder="e.g., 450">
+                                </div>
+                                
+                                <div>
+                                    <label for="licenseType" class="block text-sm font-medium text-gray-700 mb-2">License Type</label>
+                                    <select id="licenseType" name="licenseType"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Select Type</option>
+                                        <option value="Per User">Per User</option>
+                                        <option value="Per Device">Per Device</option>
+                                        <option value="Site License">Site License</option>
+                                        <option value="Concurrent">Concurrent</option>
+                                        <option value="Enterprise">Enterprise</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t pt-6">
+                            <h4 class="text-lg font-medium text-gray-900 mb-4">Financial Information</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label for="monthlyCost" class="block text-sm font-medium text-gray-700 mb-2">Monthly Cost *</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                        <input type="number" id="monthlyCost" name="monthlyCost" required min="0" step="0.01"
+                                               class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                               placeholder="0.00">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="annualCost" class="block text-sm font-medium text-gray-700 mb-2">Annual Cost</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                                        <input type="number" id="annualCost" name="annualCost" min="0" step="0.01"
+                                               class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                               placeholder="0.00">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="billingCycle" class="block text-sm font-medium text-gray-700 mb-2">Billing Cycle</label>
+                                    <select id="billingCycle" name="billingCycle"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Select Cycle</option>
+                                        <option value="Monthly">Monthly</option>
+                                        <option value="Quarterly">Quarterly</option>
+                                        <option value="Annual">Annual</option>
+                                        <option value="Biennial">Biennial</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t pt-6">
+                            <h4 class="text-lg font-medium text-gray-900 mb-4">Contract & Renewal</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label for="contractStart" class="block text-sm font-medium text-gray-700 mb-2">Contract Start Date</label>
+                                    <input type="date" id="contractStart" name="contractStart"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                                
+                                <div>
+                                    <label for="contractEnd" class="block text-sm font-medium text-gray-700 mb-2">Contract End Date</label>
+                                    <input type="date" id="contractEnd" name="contractEnd"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                                
+                                <div>
+                                    <label for="autoRenewal" class="block text-sm font-medium text-gray-700 mb-2">Auto Renewal</label>
+                                    <select id="autoRenewal" name="autoRenewal"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Select Option</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                        <option value="Unknown">Unknown</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t pt-6">
+                            <h4 class="text-lg font-medium text-gray-900 mb-4">Security & Compliance</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="ssoEnabled" class="block text-sm font-medium text-gray-700 mb-2">SSO Enabled</label>
+                                    <select id="ssoEnabled" name="ssoEnabled"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Select Option</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                        <option value="Pending">Pending Setup</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label for="riskLevel" class="block text-sm font-medium text-gray-700 mb-2">Risk Level</label>
+                                    <select id="riskLevel" name="riskLevel"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Select Risk Level</option>
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Critical">Critical</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t pt-6">
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <textarea id="description" name="description" rows="4"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                      placeholder="Brief description of the application and its purpose..."></textarea>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-6 border-t">
+                            <a href="inventory.html" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                                Cancel
+                            </a>
+                            <div class="flex space-x-3">
+                                <button type="button" onclick="saveDraft()" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                                    Save as Draft
+                                </button>
+                                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                    Add Application
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Form submission
+        document.getElementById('addApplicationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addApplication();
+        });
+
+        // Auto-calculate annual cost when monthly cost changes
+        document.getElementById('monthlyCost').addEventListener('input', function() {
+            const monthlyCost = parseFloat(this.value) || 0;
+            const annualCost = monthlyCost * 12;
+            document.getElementById('annualCost').value = annualCost.toFixed(2);
+        });
+
+        // Auto-calculate monthly cost when annual cost changes
+        document.getElementById('annualCost').addEventListener('input', function() {
+            const annualCost = parseFloat(this.value) || 0;
+            const monthlyCost = annualCost / 12;
+            document.getElementById('monthlyCost').value = monthlyCost.toFixed(2);
+        });
+
+        function saveDraft() {
+            const formData = new FormData(document.getElementById('addApplicationForm'));
+            const draftData = Object.fromEntries(formData);
+            
+            // Save to localStorage
+            localStorage.setItem('applicationDraft', JSON.stringify(draftData));
+            showNotification('Draft saved successfully!', 'success');
+        }
+
+        // Load draft on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const draft = localStorage.getItem('applicationDraft');
+            if (draft) {
+                const draftData = JSON.parse(draft);
+                Object.keys(draftData).forEach(key => {
+                    const field = document.getElementById(key) || document.querySelector(`[name="${key}"]`);
+                    if (field) {
+                        field.value = draftData[key];
+                    }
+                });
+                showNotification('Draft loaded', 'info');
+            }
+        });
+    </script>
+</body>
+</html>

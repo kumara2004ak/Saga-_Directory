@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAM Dashboard - Software Asset Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0">
+        <div class="flex items-center justify-between h-16 px-6 border-b">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-building text-green-400 text-xl"></i>
+                <span class="text-xl font-bold text-gray-800">SaaS Management</span>
+            </div>
+            <button id="closeSidebar" class="lg:hidden">
+                <i class="fas fa-times text-gray-600"></i>
+            </button>
+        </div>
+         <div class="sidebar">
+  </div>
+        <nav class="mt-6">
+            <div class="px-6 mb-4">
+            </div>
+            <ul class="space-y-1 px-3">
+                <li>
+                    <a href="index.html" class="flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-md">
+                        <i class="fas fa-home mr-3"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="application.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-box mr-3"></i>
+                        Application & License Inventory
+                    </a>
+                </li>
+                <li>
+                    <a href="financial.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-dollar-sign mr-3"></i>
+                        Renewal & Cost Management
+                    </a>
+                </li>
+                <li>
+                    <a href="security.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-shield-alt mr-3"></i>
+                        Shadow IT & Security
+                    </a>
+                </li>
+                <li>
+                    <a href="/insights.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-users mr-3"></i>
+                        User & Activity Insights
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:pl-64">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="flex items-center justify-between h-16 px-6">
+                <button id="openSidebar" class="lg:hidden">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </button>
+                
+                <div class="flex-1 max-w-md mx-4">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" placeholder="Search applications, users, or metrics..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="relative">
+                        <button id="userMenuBtn" class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400"></i>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                            <hr class="my-1">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Log out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-6">
+            <div class="mb-6">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+                    <div class="flex space-x-3">
+                        <div class="relative">
+                            <button id="filterBtn" class="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                                <i class="fas fa-filter mr-2"></i>
+                                Filter
+                                <i class="fas fa-chevron-down ml-2"></i>
+                            </button>
+                            <div id="filterMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Last 7 days</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Last 30 days</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Last 90 days</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Custom range</a>
+                            </div>
+                        </div>
+                        <button onclick="exportReport()" class="flex items-center px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700">
+                            <i class="fas fa-download mr-2"></i>
+                            Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm border cursor-pointer hover:shadow-md transition-shadow" onclick="openModal('applicationsModal')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Applications</p>
+                            <p class="text-3xl font-bold text-gray-900">247</p>
+                            <p class="text-sm text-green-600">+12% from last month</p>
+                        </div>
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <i class="fas fa-box text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border cursor-pointer hover:shadow-md transition-shadow" onclick="openModal('usersModal')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Active Users</p>
+                            <p class="text-3xl font-bold text-gray-900">1,834</p>
+                            <p class="text-sm text-green-600">+5% from last month</p>
+                        </div>
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <i class="fas fa-users text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border cursor-pointer hover:shadow-md transition-shadow" onclick="openModal('spendModal')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Monthly Spend</p>
+                            <p class="text-3xl font-bold text-gray-900">$45,670</p>
+                            <p class="text-sm text-red-600">-3% from last month</p>
+                        </div>
+                        <div class="p-3 bg-yellow-100 rounded-full">
+                            <i class="fas fa-dollar-sign text-yellow-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border cursor-pointer hover:shadow-md transition-shadow" onclick="openModal('complianceModal')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Compliance Score</p>
+                            <p class="text-3xl font-bold text-gray-900">94%</p>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div class="bg-green-600 h-2 rounded-full" style="width: 94%"></div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <i class="fas fa-shield-alt text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts and Alerts -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Application Usage Trends</h3>
+                    <div class="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-chart-bar text-4xl text-gray-400 mb-2"></i>
+                            <p class="text-gray-500">Usage Chart Placeholder</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Alerts</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg cursor-pointer hover:bg-yellow-100" onclick="openModal('alertModal')">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">License Expiring Soon</p>
+                                <p class="text-xs text-gray-600">Adobe Creative Suite expires in 5 days</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3 p-3 bg-red-50 rounded-lg cursor-pointer hover:bg-red-100" onclick="openModal('alertModal')">
+                            <i class="fas fa-exclamation-triangle text-red-500 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Shadow IT Detected</p>
+                                <p class="text-xs text-gray-600">Unknown application found in network</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Compliance Check Passed</p>
+                                <p class="text-xs text-gray-600">Monthly security audit completed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="applicationsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Application Details</h3>
+                <button onclick="closeModal('applicationsModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <p><strong>Total applications:</strong> 247</p>
+                <p><strong>Active:</strong> 235</p>
+                <p><strong>Inactive:</strong> 12</p>
+                <p><strong>Growth rate:</strong> +12% this month</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="usersModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">User Activity Details</h3>
+                <button onclick="closeModal('usersModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <p><strong>Active users:</strong> 1,834</p>
+                <p><strong>New users this month:</strong> 89</p>
+                <p><strong>User engagement:</strong> 87%</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="spendModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Spending Breakdown</h3>
+                <button onclick="closeModal('spendModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <p><strong>Monthly spend:</strong> $45,670</p>
+                <p><strong>Largest expense:</strong> Microsoft Office 365 ($12,500)</p>
+                <p><strong>Cost savings this month:</strong> $1,200</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="complianceModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Compliance Details</h3>
+                <button onclick="closeModal('complianceModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <p><strong>Compliance score:</strong> 94%</p>
+                <p><strong>Compliant applications:</strong> 239</p>
+                <p><strong>Non-compliant:</strong> 8</p>
+                <p><strong>Last audit:</strong> 2 days ago</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="alertModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">Alert Details</h3>
+                <button onclick="closeModal('alertModal')" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="space-y-3">
+                    <p><strong>Alert Type:</strong> License Expiring</p>
+                    <p><strong>Application:</strong> Adobe Creative Suite</p>
+                    <p><strong>Risk Level:</strong> Medium</p>
+                    <p><strong>Expires:</strong> 5 days</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Investigate</button>
+                    <button class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">Mark Resolved</button>
+                </div>
+            </div>
+        </div>
+    </div> 
+ <script src="script.js"></script>
+</body>
+</html>
