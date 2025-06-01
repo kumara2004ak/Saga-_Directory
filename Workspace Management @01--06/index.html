@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test@2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            blue: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              900: '#1e3a8a',
+            },
+            gray: {
+              50: '#f9fafb',
+              100: '#f3f4f6',
+              200: '#e5e7eb',
+              300: '#d1d5db',
+              400: '#9ca3af',
+              500: '#6b7280',
+              600: '#4b5563',
+              700: '#374151',
+              800: '#1f2937',
+              900: '#111827',
+            },
+            green: {
+              500: '#22c55e',
+              600: '#16a34a',
+            },
+            red: {
+              500: '#ef4444',
+              600: '#dc2626',
+            },
+            orange: {
+              600: '#ea580c',
+            },
+            purple: {
+              600: '#9333ea',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Additional styles */
+    .sidebar-transition {
+      transition: transform 0.3s ease-in-out;
+    }
+    
+    .modal-backdrop {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .notification-enter {
+      transform: translateY(0);
+      opacity: 1;
+      transition: all 0.2s ease-in-out;
+    }
+    
+    .notification-exit {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    
+    /* Hide scrollbar but allow scrolling */
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+  <div class="flex h-screen" id="app-container">
+    <!-- Mobile sidebar backdrop -->
+    <div id="sidebar-backdrop" class="fixed inset-0 z-20 bg-black/50 lg:hidden hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 transform border-r border-gray-200 bg-white sidebar-transition -translate-x-full dark:border-gray-700 dark:bg-gray-800 lg:static lg:translate-x-0">
+      <div class="flex h-16 items-center justify-between border-b border-gray-200 px-4 dark:border-gray-700">
+        <div class="flex items-center gap-2">
+          <div class="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600 text-white">
+            <span class="text-lg font-bold">W</span>
+          </div>
+          <span class="text-lg font-semibold text-gray-800 dark:text-white">Workspace Management</span>
+        </div>
+        <button id="close-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+          </svg>
+          <span class="sr-only">Close sidebar</span>
+        </button>
+      </div>
+
+      <nav class="flex flex-col gap-1 p-2">
+        <div class="flex flex-col">
+          <button id="workspace-toggle" class="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>Workspace Management</span>
+            </div>
+            <svg id="workspace-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="rotate-180">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+
+        <div id="workspace-submenu" class="mt-1 space-y-1 pl-10">
+         <nav class="mt-6">
+            <div class="px-6 mb-4">
+            </div>
+            <ul class="space-y-1 px-3">
+                <li>
+                    <a href="Domain2.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md">
+                        <i class="fas fa-home mr-3"></i>
+                        Domain Management
+                    </a>
+                </li>
+                <li>
+                    <a href="index.html" class="flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-box mr-3"></i>
+                        Email Admin Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="ex.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-dollar-sign mr-3"></i>
+                        Drive Admin Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="chat.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-shield-alt mr-3"></i>
+                        Chat Meet Admin Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="calendar.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-users mr-3"></i>
+                        Calendar Admin Settings
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        </div>
+        </div>
+      </nav>
+
+      <div class="absolute bottom-0 w-full border-t border-gray-200 p-4 dark:border-gray-700">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-md bg-gray-200 dark:bg-gray-700"></div>
+          <div class="flex-1 overflow-hidden">
+            <p class="truncate text-sm font-medium text-gray-900 dark:text-white">Acme Corporation</p>
+            <p class="truncate text-xs text-gray-500 dark:text-gray-400">Enterprise Plan</p>
+          </div>
+          <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex flex-1 flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
+      <!-- Top Navigation -->
+      <header class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-800">
+        <div class="flex items-center gap-4">
+          <button id="open-sidebar" class="lg:hidden text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" x2="20" y1="12" y2="12"></line>
+              <line x1="4" x2="20" y1="6" y2="6"></line>
+              <line x1="4" x2="20" y1="18" y2="18"></line>
+            </svg>
+            <span class="sr-only">Open sidebar</span>
+          </button>
+          <h1 class="text-xl font-semibold text-gray-800 dark:text-white">Workspace Management</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="relative hidden md:block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
+            <input type="search" placeholder="Search..." class="h-10 rounded-md border border-gray-200 bg-white pl-8 pr-4 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+          </div>
+
+          <button id="toggle-dark-mode" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50">
+            <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+            <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+            <span class="sr-only">Toggle dark mode</span>
+          </button>
+
+          <div class="relative">
+            <button id="notifications-button" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50 relative">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+              </svg>
+              <span class="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
+              <span class="sr-only">Notifications</span>
+            </button>
+
+            <!-- Notifications Panel -->
+            <div id="notifications-panel" class="absolute right-0 top-12 z-50 w-80 transform rounded-md border border-gray-200 bg-white shadow-lg transition-all duration-200 ease-in-out translate-y-2 opacity-0 pointer-events-none dark:border-gray-700 dark:bg-gray-800 md:w-96">
+              <div class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
+                <h3 class="font-medium text-gray-900 dark:text-white">Notifications</h3>
+                <button id="close-notifications" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+                  </svg>
+                  <span class="sr-only">Close</span>
+                </button>
+              </div>
+
+              <div class="max-h-[60vh] overflow-y-auto p-2 hide-scrollbar">
+                <div class="space-y-2" id="notifications-list">
+                  <!-- Notifications will be inserted here by JavaScript -->
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between border-t border-gray-200 p-3 dark:border-gray-700">
+                <button id="mark-all-read" class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
+                  Mark all as read
+                </button>
+                <button id="clear-all" class="text-sm text-red-500 hover:text-red-600">
+                  Clear all
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+            <div class="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+            <span class="hidden text-sm font-medium md:inline-block">
+              Admin User
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 overflow-auto p-4 md:p-6">
+        <div class="mx-auto max-w-6xl">
+          <div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+            <div>
+              <h2 id="section-title" class="text-2xl font-bold text-gray-800 dark:text-white">Email Admin Settings</h2>
+              <p id="section-subtitle" class="text-sm text-gray-500 dark:text-gray-400">Manage email settings for your organization</p>
+            </div>
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 bg-green-500 hover:bg-green-600 text-white h-10 px-4 py-2 w-full md:w-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              Save Settings
+            </button>
+          </div>
+
+          <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+            <!-- Content sections will be dynamically loaded here -->
+            <div id="content-container">
+              <!-- Email Admin Settings (default view) -->
+              <div id="email-content" class="space-y-6">
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Email Quota (GB)</h3>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Sets the maximum amount of email storage allocated per user or department
+                      </p>
+                    </div>
+                    <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" data-info="email-quota">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                      <span id="quota-value" class="text-sm font-medium text-gray-700 dark:text-gray-300">10 GB</span>
+                      <span class="text-sm text-gray-500 dark:text-gray-400">Max: 50 GB</span>
+                    </div>
+                    <div class="relative w-full h-2">
+                      <div class="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                      <div id="quota-slider" class="absolute inset-y-0 left-0 w-1/5 rounded-full bg-green-600"></div>
+                      <input type="range" min="1" max="50" value="10" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" id="email-quota-slider">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between rounded-md border border-gray-200 p-4 dark:border-gray-700">
+                    <div class="space-y-0.5">
+                      <div class="flex items-center gap-2">
+                        <h3 class="text-base font-medium text-gray-900 dark:text-white">
+                          Delete Emails for Exited Employees
+                        </h3>
+                        <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" data-info="delete-emails">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4"></path>
+                            <path d="M12 8h.01"></path>
+                          </svg>
+                        </button>
+                      </div>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Automatically deletes email accounts and stored emails of employees marked as exited
+                      </p>
+                    </div>
+                    <label class="relative inline-flex cursor-pointer items-center">
+                      <input type="checkbox" id="delete-emails-toggle" class="peer sr-only">
+                      <div class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-green-800"></div>
+                    </label>
+                  </div>
+
+                  <div class="flex items-center justify-between rounded-md border border-gray-200 p-4 dark:border-gray-700">
+                    <div class="space-y-0.5">
+                      <div class="flex items-center gap-2">
+                        <h3 class="text-base font-medium text-gray-900 dark:text-white">
+                          Archive Emails for Exited Employees
+                        </h3>
+                        <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" data-info="archive-emails">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4"></path>
+                            <path d="M12 8h.01"></path>
+                          </svg>
+                        </button>
+                      </div>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Backs up and retains emails of exited employees for compliance or future reference
+                      </p>
+                    </div>
+                    <label class="relative inline-flex cursor-pointer items-center">
+                      <input type="checkbox" id="archive-emails-toggle" class="peer sr-only" checked>
+                      <div class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-green-800"></div>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4">
+                    <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2">Cancel</button>
+                    <button id="save-email-settings" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-green-500 bg-green-500 text-white hover:bg-green-600 dark:bg-green-600 dark:text-white dark:hover:bg-green-500 h-10 px-4 py-2">Save Changes</button>
+                </div>
+              </div>
+
+              <!-- Domain Management -->
+              <div id="domain-content" class="space-y-6 hidden">
+                <!-- Domain Management content will be loaded by JavaScript -->
+              </div>
+
+              <!-- Drive Admin Settings -->
+              <div id="drive-content" class="space-y-6 hidden">
+                <!-- Drive Admin Settings content will be loaded by JavaScript -->
+              </div>
+
+              <!-- Chat Meet Admin Settings -->
+              <div id="chat-content" class="space-y-6 hidden">
+                <!-- Chat Meet Admin Settings content will be loaded by JavaScript -->
+              </div>
+
+              <!-- Calendar Admin Settings -->
+              <div id="calendar-content" class="space-y-6 hidden">
+                <!-- Calendar Admin Settings content will be loaded by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Info Modal -->
+  <div id="info-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden">
+    <div class="w-full max-w-md transform rounded-lg bg-white p-6 shadow-xl transition-all duration-200 dark:bg-gray-800">
+      <div class="flex items-center justify-between">
+        <h3 id="modal-title" class="text-lg font-medium text-gray-900 dark:text-white">Information</h3>
+        <button id="close-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+          </svg>
+          <span class="sr-only">Close</span>
+        </button>
+      </div>
+
+      <div class="mt-4">
+        <p id="modal-description" class="text-sm text-gray-600 dark:text-gray-300"></p>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button id="modal-ok" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 bg-slate-900 text-slate-50 hover:bg-slate-900/90 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90 h-10 px-4 py-2">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-4 right-4 z-50 max-w-xs transform rounded-lg bg-white p-4 shadow-lg transition-all duration-200 dark:bg-gray-800 notification-exit">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <div class="ml-3 w-0 flex-1">
+        <p id="toast-title" class="text-sm font-medium text-gray-900 dark:text-white">Success</p>
+        <p id="toast-description" class="mt-1 text-sm text-gray-500 dark:text-gray-400">Your changes have been saved.</p>
+      </div>
+      <div class="ml-4 flex-shrink-0 flex">
+        <button id="close-toast" class="inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          <span class="sr-only">Close</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

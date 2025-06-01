@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Meet Admin Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Toggle Switch Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Tooltip Styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen" id="app-container">
+    <!-- Mobile sidebar backdrop -->
+    <div id="sidebar-backdrop" class="fixed inset-0 z-20 bg-black/50 lg:hidden hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 transform border-r border-gray-200 bg-white sidebar-transition -translate-x-full lg:static lg:translate-x-0">
+      <div class="flex h-16 items-center justify-between border-b border-gray-200 px-4">
+        <div class="flex items-center gap-2">
+          <div class="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600 text-white">
+            <span class="text-lg font-bold">W</span>
+          </div>
+          <span class="text-lg font-semibold text-gray-800">Workspace Management</span>
+        </div>
+        <button id="close-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+          </svg>
+          <span class="sr-only">Close sidebar</span>
+        </button>
+      </div>
+
+      <nav class="flex flex-col gap-1 p-2">
+        <div class="flex flex-col">
+          <button id="workspace-toggle" class="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors bg-gray-100 text-gray-900">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>Workspace Management</span>
+            </div>
+            <svg id="workspace-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="rotate-180">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+
+        <div id="workspace-submenu" class="mt-1 space-y-1 pl-10">
+         <nav class="mt-6">
+            <div class="px-6 mb-4">
+            </div>
+            <ul class="space-y-1 px-3">
+                <li>
+                    <a href="Domain2.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-home mr-3"></i>
+                        Domain Management
+                    </a>
+                </li>
+                <li>
+                    <a href="index.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-box mr-3"></i>
+                        Email Admin Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="ex.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-dollar-sign mr-3"></i>
+                        Drive Admin Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="chat.html" class="flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-shield-alt mr-3"></i>
+                        Chat Meet Admin Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="calendar.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-users mr-3"></i>
+                        Calendar Admin Settings
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        </div>
+        </div>
+      </nav>
+
+      <div class="absolute bottom-0 w-full border-t border-gray-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-md bg-gray-200"></div>
+          <div class="flex-1 overflow-hidden">
+            <p class="truncate text-sm font-medium text-gray-900">Acme Corporation</p>
+            <p class="truncate text-xs text-gray-500">Enterprise Plan</p>
+          </div>
+          <button class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex flex-1 flex-col overflow-hidden bg-gray-50">
+      <!-- Top Navigation -->
+      <header class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4">
+        <div class="flex items-center gap-4">
+          <button id="open-sidebar" class="lg:hidden text-gray-600 hover:text-gray-900">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" x2="20" y1="12" y2="12"></line>
+              <line x1="4" x2="20" y1="6" y2="6"></line>
+              <line x1="4" x2="20" y1="18" y2="18"></line>
+            </svg>
+            <span class="sr-only">Open sidebar</span>
+          </button>
+          <h1 class="text-xl font-semibold text-gray-800">Workspace Management</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="relative hidden md:block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
+            <input type="search" placeholder="Search..." class="h-10 rounded-md border border-gray-200 bg-white pl-8 pr-4 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500">
+          </div>
+
+          <div class="relative">
+            <button id="notifications-button" class="text-gray-600 hover:text-gray-900 relative">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+              </svg>
+              <span class="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
+              <span class="sr-only">Notifications</span>
+            </button>
+
+            <!-- Notifications Panel -->
+            <div id="notifications-panel" class="absolute right-0 top-12 z-50 w-80 transform rounded-md border border-gray-200 bg-white shadow-lg transition-all duration-200 ease-in-out translate-y-2 opacity-0 pointer-events-none md:w-96">
+              <div class="flex items-center justify-between border-b border-gray-200 p-4">
+                <h3 class="font-medium text-gray-900">Notifications</h3>
+                <button id="close-notifications" class="text-gray-500 hover:text-gray-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+                  </svg>
+                  <span class="sr-only">Close</span>
+                </button>
+              </div>
+
+              <div class="max-h-[60vh] overflow-y-auto p-2 hide-scrollbar">
+                <div class="space-y-2" id="notifications-list">
+                  <!-- Notifications will be inserted here by JavaScript -->
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between border-t border-gray-200 p-3">
+                <button id="mark-all-read" class="text-sm text-gray-600 hover:text-gray-900">
+                  Mark all as read
+                </button>
+                <button id="clear-all" class="text-sm text-red-500 hover:text-red-600">
+                  Clear all
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button class="flex items-center gap-2 text-gray-700">
+            <div class="h-8 w-8 rounded-full bg-gray-200"></div>
+            <span class="hidden text-sm font-medium md:inline-block">
+              Admin User
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 overflow-auto p-4 md:p-6">
+        <div class="mx-auto max-w-6xl">
+          <!-- Content will be injected here -->
+           <!-- Header -->
+    <header class="mb-8">
+      <h1 class="text-2xl font-bold text-gray-800 mb-2">Chat Meet Admin Settings</h1>
+      <p class="text-gray-600">Configure chat and video meeting settings for your organization</p>
+    </header>
+
+    <!-- Settings Panel -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <form id="settings-form">
+        <!-- Video Call Duration -->
+        <div class="mb-8">
+          <div class="flex justify-between items-center mb-2">
+            <label for="videoDuration" class="text-gray-700 font-medium">Max Video Call Duration (Minutes)</label>
+            <input type="number" id="videoDuration" name="videoDuration" class="w-24 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-center" value="120">
+          </div>
+          
+          <div class="relative">
+            <input type="range" id="videoDurationSlider" min="5" max="480" step="5" value="120" class="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200">
+            
+            <div class="flex justify-between text-xs text-gray-500 mt-2">
+              <span>5 min</span>
+              <span>2 hours</span>
+              <span>4 hours</span>
+              <span>8 hours</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Sharing Toggle -->
+        <div class="flex justify-between items-center mb-8">
+          <label for="fileSharing" class="text-gray-700 font-medium">Enable File Sharing in Chat</label>
+          <div class="relative">
+            <label class="toggle-switch">
+              <input type="checkbox" id="fileSharing" name="fileSharing" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- File Settings Group -->
+        <div id="fileSettingsGroup">
+          <!-- Max Files per Send -->
+          <div class="mb-6">
+            <div class="flex justify-between items-center">
+              <label for="maxFiles" class="text-gray-700 font-medium flex items-center">
+                Max Files per Send
+                <div class="tooltip ml-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="tooltiptext">Maximum number of files a user can send in a single message</span>
+                </div>
+              </label>
+              <input type="number" id="maxFiles" name="maxFiles" min="1" max="20" class="w-24 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-center" value="5">
+            </div>
+          </div>
+
+          <!-- Max File Size per Send -->
+          <div class="mb-6">
+            <div class="flex justify-between items-center">
+              <label for="maxFileSize" class="text-gray-700 font-medium">Max File Size per Send (MB)</label>
+              <input type="number" id="maxFileSize" name="maxFileSize" min="1" max="100" class="w-24 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-center" value="20">
+            </div>
+          </div>
+
+          <!-- Max Individual File Size -->
+          <div class="mb-6">
+            <div class="flex justify-between items-center">
+              <label for="maxIndividualSize" class="text-gray-700 font-medium">Max Individual File Size (MB)</label>
+              <input type="number" id="maxIndividualSize" name="maxIndividualSize" min="1" max="50" class="w-24 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-center" value="10">
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Settings Dropdown -->
+        <div class="mb-8">
+          <button type="button" id="additionalSettingsBtn" class="flex items-center text-green-600 hover:text-green-800 transition">
+            <span>Additional Settings</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          
+          <div id="additionalSettingsPanel" class="hidden mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
+            <!-- Additional Setting 1 -->
+            <div class="mb-4">
+              <div class="flex justify-between items-center">
+                <label for="chatRetention" class="text-gray-700 font-medium">Chat History Retention (Days)</label>
+                <input type="number" id="chatRetention" name="chatRetention" min="1" max="365" class="w-24 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-center" value="30">
+              </div>
+            </div>
+            
+            <!-- Additional Setting 2 -->
+            <div class="mb-4">
+              <div class="flex justify-between items-center">
+                <label for="recordingStorage" class="text-gray-700 font-medium">Recording Storage (Days)</label>
+                <input type="number" id="recordingStorage" name="recordingStorage" min="1" max="365" class="w-24 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 text-center" value="14">
+              </div>
+            </div>
+            
+            <!-- Additional Setting 3 -->
+            <div>
+              <div class="flex justify-between items-center">
+                <label for="securityLevel" class="text-gray-700 font-medium">Security Level</label>
+                <select id="securityLevel" name="securityLevel" class="w-40 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                  <option value="standard">Standard</option>
+                  <option value="enhanced">Enhanced</option>
+                  <option value="maximum">Maximum</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-4 mt-10 border-t pt-6">
+          <button type="button" id="resetBtn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition">
+            Reset to Default
+          </button>
+          <button type="button" id="cancelBtn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition">
+            Cancel
+          </button>
+          <button type="button" id="saveBtn" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Confirm Changes</h3>
+      <p class="text-gray-600 mb-6">Are you sure you want to save these changes? This will affect all users in your organization.</p>
+      <div class="flex justify-end space-x-3">
+        <button id="cancelModalBtn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition">
+          Cancel
+        </button>
+        <button id="confirmModalBtn" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+    // DOM Elements
+const videoDurationSlider = document.getElementById('videoDurationSlider');
+const videoDuration = document.getElementById('videoDuration');
+const fileSharing = document.getElementById('fileSharing');
+const fileSettingsGroup = document.getElementById('fileSettingsGroup');
+const additionalSettingsBtn = document.getElementById('additionalSettingsBtn');
+const additionalSettingsPanel = document.getElementById('additionalSettingsPanel');
+const saveBtn = document.getElementById('saveBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const resetBtn = document.getElementById('resetBtn');
+const confirmationModal = document.getElementById('confirmationModal');
+const cancelModalBtn = document.getElementById('cancelModalBtn');
+const confirmModalBtn = document.getElementById('confirmModalBtn');
+const toast = document.getElementById('toast');
+
+// Default values
+const defaultSettings = {
+  videoDuration: 120,
+  fileSharing: true,
+  maxFiles: 5,
+  maxFileSize: 20,
+  maxIndividualSize: 10,
+  chatRetention: 30,
+  recordingStorage: 14,
+  securityLevel: 'standard'
+};
+
+// Store original values for cancel functionality
+let originalSettings = {};
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', () => {
+  // Save original values
+  saveOriginalSettings();
+  
+  // Set up event listeners
+  setupEventListeners();
+  
+  // Check if file sharing is enabled initially
+  toggleFileSettings();
+});
+
+function saveOriginalSettings() {
+  originalSettings = {
+    videoDuration: parseInt(videoDuration.value),
+    fileSharing: fileSharing.checked,
+    maxFiles: parseInt(document.getElementById('maxFiles').value),
+    maxFileSize: parseInt(document.getElementById('maxFileSize').value),
+    maxIndividualSize: parseInt(document.getElementById('maxIndividualSize').value),
+    chatRetention: parseInt(document.getElementById('chatRetention').value),
+    recordingStorage: parseInt(document.getElementById('recordingStorage').value),
+    securityLevel: document.getElementById('securityLevel').value
+  };
+}
+
+function setupEventListeners() {
+  // Slider and input synchronization
+  videoDurationSlider.addEventListener('input', updateDurationFromSlider);
+  videoDuration.addEventListener('input', updateSliderFromDuration);
+  
+  // File sharing toggle
+  fileSharing.addEventListener('change', toggleFileSettings);
+  
+  // Additional settings dropdown
+  additionalSettingsBtn.addEventListener('click', toggleAdditionalSettings);
+  
+  // Form buttons
+  saveBtn.addEventListener('click', showConfirmationModal);
+  cancelBtn.addEventListener('click', revertToOriginalSettings);
+  resetBtn.addEventListener('click', resetToDefaultSettings);
+  
+  // Modal buttons
+  cancelModalBtn.addEventListener('click', hideConfirmationModal);
+  confirmModalBtn.addEventListener('click', saveSettings);
+  
+  // Input validation
+  setupInputValidation();
+}
+
+// Update duration input when slider changes
+function updateDurationFromSlider() {
+  videoDuration.value = videoDurationSlider.value;
+}
+
+// Update slider when duration input changes
+function updateSliderFromDuration() {
+  // Ensure the value is within slider bounds
+  let value = parseInt(videoDuration.value);
+  
+  if (isNaN(value)) {
+    value = defaultSettings.videoDuration;
+  }
+  
+  if (value < 5) {
+    value = 5;
+    videoDuration.value = value;
+  } else if (value > 480) {
+    value = 480;
+    videoDuration.value = value;
+  }
+  
+  videoDurationSlider.value = value;
+}
+
+// Toggle file settings visibility based on file sharing toggle
+function toggleFileSettings() {
+  if (fileSharing.checked) {
+    fileSettingsGroup.classList.remove('hidden');
+  } else {
+    fileSettingsGroup.classList.add('hidden');
+  }
+}
+
+// Toggle additional settings panel
+function toggleAdditionalSettings() {
+  const isHidden = additionalSettingsPanel.classList.contains('hidden');
+  const icon = additionalSettingsBtn.querySelector('svg');
+  
+  if (isHidden) {
+    additionalSettingsPanel.classList.remove('hidden');
+    icon.classList.add('rotate-180');
+  } else {
+    additionalSettingsPanel.classList.add('hidden');
+    icon.classList.remove('rotate-180');
+  }
+}
+
+// Show confirmation modal
+function showConfirmationModal() {
+  confirmationModal.classList.remove('hidden');
+}
+
+// Hide confirmation modal
+function hideConfirmationModal() {
+  confirmationModal.classList.add('hidden');
+}
+
+// Save settings
+function saveSettings() {
+  // In a real application, this would send data to a server
+  // For this demo, we'll just show a success message
+  hideConfirmationModal();
+  showToast('Settings saved successfully!');
+  
+  // Update original settings to the new values
+  saveOriginalSettings();
+}
+
+// Show toast notification
+function showToast(message) {
+  document.getElementById('toast-description').textContent = message;
+  toast.classList.remove('notification-exit');
+  toast.style.display = 'block';
+  
+  // Auto hide after 3 seconds
+  setTimeout(() => {
+    toast.classList.add('notification-exit');
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 200);
+  }, 3000);
+}
+
+// Close toast manually
+document.getElementById('close-toast').addEventListener('click', () => {
+  toast.classList.add('notification-exit');
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 200);
+});
+
+// Revert to original settings
+function revertToOriginalSettings() {
+  videoDuration.value = originalSettings.videoDuration;
+  videoDurationSlider.value = originalSettings.videoDuration;
+  fileSharing.checked = originalSettings.fileSharing;
+  document.getElementById('maxFiles').value = originalSettings.maxFiles;
+  document.getElementById('maxFileSize').value = originalSettings.maxFileSize;
+  document.getElementById('maxIndividualSize').value = originalSettings.maxIndividualSize;
+  document.getElementById('chatRetention').value = originalSettings.chatRetention;
+  document.getElementById('recordingStorage').value = originalSettings.recordingStorage;
+  document.getElementById('securityLevel').value = originalSettings.securityLevel;
+  
+  toggleFileSettings();
+}
+
+// Reset to default settings
+function resetToDefaultSettings() {
+  videoDuration.value = defaultSettings.videoDuration;
+  videoDurationSlider.value = defaultSettings.videoDuration;
+  fileSharing.checked = defaultSettings.fileSharing;
+  document.getElementById('maxFiles').value = defaultSettings.maxFiles;
+  document.getElementById('maxFileSize').value = defaultSettings.maxFileSize;
+  document.getElementById('maxIndividualSize').value = defaultSettings.maxIndividualSize;
+  document.getElementById('chatRetention').value = defaultSettings.chatRetention;
+  document.getElementById('recordingStorage').value = defaultSettings.recordingStorage;
+  document.getElementById('securityLevel').value = defaultSettings.securityLevel;
+  
+  toggleFileSettings();
+  showToast('Settings reset to default values');
+}
+
+// Input validation
+function setupInputValidation() {
+  const numberInputs = document.querySelectorAll('input[type="number"]');
+  
+  numberInputs.forEach(input => {
+    input.addEventListener('blur', () => {
+      const min = parseInt(input.getAttribute('min'));
+      const max = parseInt(input.getAttribute('max'));
+      let value = parseInt(input.value);
+      
+      if (isNaN(value)) {
+        // If input is not a number, reset to default or min
+        if (input.id in defaultSettings) {
+          value = defaultSettings[input.id];
+        } else {
+          value = min || 0;
+        }
+        showInputError(input, `Invalid value. Reset to ${value}.`);
+      } else if (min !== null && value < min) {
+        value = min;
+        showInputError(input, `Value cannot be less than ${min}.`);
+      } else if (max !== null && value > max) {
+        value = max;
+        showInputError(input, `Value cannot be greater than ${max}.`);
+      }
+      
+      input.value = value;
+    });
+  });
+}
+
+// Show input error
+function showInputError(inputElement, message) {
+  // Create error message element if it doesn't exist
+  let errorElement = inputElement.parentElement.querySelector('.error-message');
+  
+  if (!errorElement) {
+    errorElement = document.createElement('p');
+    errorElement.className = 'error-message text-red-500 text-xs mt-1';
+    inputElement.parentElement.appendChild(errorElement);
+  }
+  
+  // Set message and show
+  errorElement.textContent = message;
+  
+  // Add error style to input
+  inputElement.classList.add('border-red-500');
+  
+  // Remove error after 3 seconds
+  setTimeout(() => {
+    errorElement.textContent = '';
+    inputElement.classList.remove('border-red-500');
+  }, 3000);
+}
+</script>
+</body>
+</html>

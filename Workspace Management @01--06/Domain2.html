@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test@2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            blue: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              900: '#1e3a8a',
+            },
+            gray: {
+              50: '#f9fafb',
+              100: '#f3f4f6',
+              200: '#e5e7eb',
+              300: '#d1d5db',
+              400: '#9ca3af',
+              500: '#6b7280',
+              600: '#4b5563',
+              700: '#374151',
+              800: '#1f2937',
+              900: '#111827',
+            },
+            green: {
+              500: '#22c55e',
+              600: '#16a34a',
+            },
+            red: {
+              500: '#ef4444',
+              600: '#dc2626',
+            },
+            orange: {
+              600: '#ea580c',
+            },
+            purple: {
+              600: '#9333ea',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Additional styles */
+    .sidebar-transition {
+      transition: transform 0.3s ease-in-out;
+    }
+    
+    .modal-backdrop {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .notification-enter {
+      transform: translateY(0);
+      opacity: 1;
+      transition: all 0.2s ease-in-out;
+    }
+    
+    .notification-exit {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    
+    /* Hide scrollbar but allow scrolling */
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+  <div class="flex h-screen" id="app-container">
+    <!-- Mobile sidebar backdrop -->
+    <div id="sidebar-backdrop" class="fixed inset-0 z-20 bg-black/50 lg:hidden hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 transform border-r border-gray-200 bg-white sidebar-transition -translate-x-full dark:border-gray-700 dark:bg-gray-800 lg:static lg:translate-x-0">
+      <div class="flex h-16 items-center justify-between border-b border-gray-200 px-4 dark:border-gray-700">
+        <div class="flex items-center gap-2">
+          <div class="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600 text-white">
+            <span class="text-lg font-bold">W</span>
+          </div>
+          <span class="text-lg font-semibold text-gray-800 dark:text-white">Workspace Management</span>
+        </div>
+        <button id="close-sidebar" class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+          </svg>
+          <span class="sr-only">Close sidebar</span>
+        </button>
+      </div>
+
+      <nav class="flex flex-col gap-1 p-2">
+        <div class="flex flex-col">
+          <button id="workspace-toggle" class="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-white">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>Workspace Management</span>
+            </div>
+            <svg id="workspace-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="rotate-180">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+
+        <div id="workspace-submenu" class="mt-1 space-y-1 pl-10">
+         <nav class="mt-6">
+            <div class="px-6 mb-4">
+            </div>
+            <ul class="space-y-1 px-3">
+                <li>
+                    <a href="Domain2.html" class="flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-md">
+                        <i class="fas fa-home mr-3"></i>
+                        Domain Management
+                    </a>
+                </li>
+                <li>
+                    <a href="index.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-box mr-3"></i>
+                        Email Admin Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="ex.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-dollar-sign mr-3"></i>
+                        Drive Admin Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="chat.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-shield-alt mr-3"></i>
+                        Chat Meet Admin Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="calendar.html" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-users mr-3"></i>
+                        Calendar Admin Settings
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        </div>
+        </div>
+      </nav>
+
+      <div class="absolute bottom-0 w-full border-t border-gray-200 p-4 dark:border-gray-700">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-md bg-gray-200 dark:bg-gray-700"></div>
+          <div class="flex-1 overflow-hidden">
+            <p class="truncate text-sm font-medium text-gray-900 dark:text-white">Acme Corporation</p>
+            <p class="truncate text-xs text-gray-500 dark:text-gray-400">Enterprise Plan</p>
+          </div>
+          <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex flex-1 flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
+      <!-- Top Navigation -->
+      <header class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-800">
+        <div class="flex items-center gap-4">
+          <button id="open-sidebar" class="lg:hidden text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" x2="20" y1="12" y2="12"></line>
+              <line x1="4" x2="20" y1="6" y2="6"></line>
+              <line x1="4" x2="20" y1="18" y2="18"></line>
+            </svg>
+            <span class="sr-only">Open sidebar</span>
+          </button>
+          <h1 class="text-xl font-semibold text-gray-800 dark:text-white">Workspace Management</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="relative hidden md:block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
+            <input type="search" placeholder="Search..." class="h-10 rounded-md border border-gray-200 bg-white pl-8 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+          </div>
+          
+          <div class="relative">
+            <button id="notifications-button" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50 relative">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+              </svg>
+              <span class="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
+              <span class="sr-only">Notifications</span>
+            </button>
+
+            <!-- Notifications Panel -->
+            <div id="notifications-panel" class="absolute right-0 top-12 z-50 w-80 transform rounded-md border border-gray-200 bg-white shadow-lg transition-all duration-200 ease-in-out translate-y-2 opacity-0 pointer-events-none dark:border-gray-700 dark:bg-gray-800 md:w-96">
+              <div class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
+                <h3 class="font-medium text-gray-900 dark:text-white">Notifications</h3>
+                <button id="close-notifications" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+                  </svg>
+                  <span class="sr-only">Close</span>
+                </button>
+              </div>
+
+              <div class="max-h-[60vh] overflow-y-auto p-2 hide-scrollbar">
+                <div class="space-y-2" id="notifications-list">
+                  <!-- Notifications will be inserted here by JavaScript -->
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between border-t border-gray-200 p-3 dark:border-gray-700">
+                <button id="mark-all-read" class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
+                  Mark all as read
+                </button>
+                <button id="clear-all" class="text-sm text-red-500 hover:text-red-600">
+                  Clear all
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+            <div class="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+            <span class="hidden text-sm font-medium md:inline-block">
+              Admin User
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+       <main class="flex-1 overflow-auto p-4 md:p-4">
+        <div class="mx-auto max-w-6xl">
+          <div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+      <!-- Domain Management Page -->
+        <div class="space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold">Domain Management</h1>
+                    <p class="text-gray-600">Manage your organization's domains and DNS settings</p>
+                </div>
+                <button
+                    class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 flex items-center gap-2"
+                    id="add-domain-btn">
+                    <i class="fas fa-plus-circle"></i>
+                    Add Domain
+                </button>
+            </div>
+
+            <!-- Domain Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white rounded-lg border shadow-sm p-4">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <i class="fas fa-globe text-green-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-500">Total Domains</p>
+                            <p class="text-2xl font-bold text-gray-900" id="total-domains">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg border shadow-sm p-4">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <i class="fas fa-check-circle text-green-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-500">Verified</p>
+                            <p class="text-2xl font-bold text-gray-900" id="verified-domains">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg border shadow-sm p-4">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-yellow-100 rounded-lg">
+                            <i class="fas fa-clock text-yellow-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-500">Pending</p>
+                            <p class="text-2xl font-bold text-gray-900" id="pending-domains">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg border shadow-sm p-4">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <i class="fas fa-envelope text-blue-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-500">Mail Hosting</p>
+                            <p class="text-2xl font-bold text-gray-900" id="mail-hosting-domains">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Domains Table -->
+            <div class="bg-white rounded-lg border shadow-sm">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Registered Domains</h2>
+                        <div class="flex items-center space-x-2">
+                            <div class="relative">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                <input type="text" placeholder="Search domains..."
+                                    class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    id="domain-search">
+                            </div>
+                            <button class="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 pb-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse" id="domains-table">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left py-3 px-4 font-medium text-gray-600">DOMAIN NAME</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-600">CREATED TIME</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-600">STATUS</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-600">MAIL HOSTING</th>
+                                    <th class="text-left py-3 px-4 font-medium text-gray-600">PRIMARY</th>
+                                    <th class="text-center py-3 px-4 font-medium text-gray-600">ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Domains will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            </div>
+            </div>
+        </main>
+
+
+    <!-- Add Domain Modal -->
+    <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50"
+        id="add-domain-modal">
+        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+            <div class="modal-content py-4 text-left px-6">
+                <div class="flex justify-between items-center pb-3 border-b">
+                    <p class="text-xl font-bold">Add Domain</p>
+                    <div class="modal-close cursor-pointer z-50">
+                        <i class="fas fa-times text-gray-500 hover:text-gray-700"></i>
+                    </div>
+                </div>
+
+                <form id="add-domain-form" class="mt-6">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2" for="domain-name">
+                            Domain Name <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                            id="domain-name" type="text" placeholder="example.com" required>
+                        <p class="text-xs text-gray-500 mt-1">Enter your domain without http:// or https://</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-2">
+                            Domain Purpose
+                        </label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-4 w-4 text-green-600" id="domain-website">
+                                <span class="ml-2 text-sm">Website hosting</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-4 w-4 text-green-600" id="domain-email">
+                                <span class="ml-2 text-sm">Email hosting</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-4 w-4 text-green-600"
+                                    id="domain-subdomain">
+                                <span class="ml-2 text-sm">Subdomain management</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="form-checkbox h-4 w-4 text-green-600" id="domain-primary">
+                            <span class="ml-2 text-sm">Set as primary domain</span>
+                        </label>
+                        <p class="text-xs text-gray-500 mt-1">Primary domain will be used for organization branding</p>
+                    </div>
+
+                    <div class="flex justify-end pt-4 border-t gap-3">
+                        <button type="button"
+                            class="modal-close px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                            Add Domain
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Domain Verification Modal -->
+    <div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50"
+        id="domain-verification-modal">
+        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+
+        <div
+            class="modal-container bg-white w-11/12 md:max-w-4xl mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-screen">
+            <div class="modal-content py-4 text-left px-6">
+                <div class="flex justify-between items-center pb-3 border-b">
+                    <div>
+                        <p class="text-xl font-bold">Verify Domain</p>
+                        <p class="text-sm text-gray-600" id="verification-domain-name">example.com</p>
+                    </div>
+                    <div class="modal-close cursor-pointer z-50">
+                        <i class="fas fa-times text-gray-500 hover:text-gray-700"></i>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <!-- Verification Tabs -->
+                    <div class="border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-8">
+                            <button
+                                class="verification-tab-btn py-2 px-1 border-b-2 border-green-500 font-medium text-sm text-green-600 active"
+                                data-tab="instructions">
+                                Setup Instructions
+                            </button>
+                            <button
+                                class="verification-tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700"
+                                data-tab="dns-records">
+                                DNS Records
+                            </button>
+                            <button
+                                class="verification-tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700"
+                                data-tab="verification-status">
+                                Verification Status
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Instructions Tab -->
+                    <div id="instructions-tab" class="verification-tab-content mt-6">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div class="flex">
+                                <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-blue-800">Domain Verification Required</h3>
+                                    <p class="text-sm text-blue-700 mt-1">
+                                        To verify domain ownership, you need to add DNS records to your domain's DNS
+                                        settings.
+                                        This process typically takes 5-10 minutes but can take up to 48 hours to
+                                        propagate.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="verification-steps">
+                            <h3 class="font-semibold text-green-600 mb-4">VERIFICATION STEPS</h3>
+                            <div class="space-y-4">
+                                <div class="verification-step flex items-start">
+                                    <span>Sign in to your domain registrar or DNS hosting provider</span>
+                                </div>
+                                <div class="verification-step flex items-start">
+                                    <span>Navigate to the DNS management section for your domain</span>
+                                </div>
+                                <div class="verification-step flex items-start">
+                                    <span>Add the TXT records shown in the "DNS Records" tab</span>
+                                </div>
+                                <div class="verification-step flex items-start">
+                                    <span>Wait for DNS propagation (usually 5-10 minutes, up to 48 hours)</span>
+                                </div>
+                                <div class="verification-step flex items-start">
+                                    <span>Click "Verify Domain" to complete the verification process</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <h4 class="font-medium text-yellow-800">Common DNS Providers</h4>
+                            <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                                <span class="text-yellow-700">• Cloudflare</span>
+                                <span class="text-yellow-700">• GoDaddy</span>
+                                <span class="text-yellow-700">• Namecheap</span>
+                                <span class="text-yellow-700">• Route 53</span>
+                                <span class="text-yellow-700">• Google Domains</span>
+                                <span class="text-yellow-700">• Bluehost</span>
+                                <span class="text-yellow-700">• HostGator</span>
+                                <span class="text-yellow-700">• Others</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DNS Records Tab -->
+                    <div id="dns-records-tab" class="verification-tab-content mt-6 hidden">
+                        <h3 class="font-semibold text-green-600 mb-4">DNS RECORDS TO ADD</h3>
+
+                        <div class="space-y-4">
+                            <!-- Ownership Verification Record -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-3">Domain Ownership Verification</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="text-left py-2 px-3 font-medium text-gray-600">Type</th>
+                                                <th class="text-left py-2 px-3 font-medium text-gray-600">Name/Host</th>
+                                                <th class="text-left py-2 px-3 font-medium text-gray-600">Value</th>
+                                                <th class="text-left py-2 px-3 font-medium text-gray-600">TTL</th>
+                                                <th class="text-left py-2 px-3 font-medium text-gray-600">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-t">
+                                                <td class="py-2 px-3 font-mono">TXT</td>
+                                                <td class="py-2 px-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <span class="font-mono">@</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-2 px-3">
+                                                    <div class="flex items-center space-x-2">
+                                                        <span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded"
+                                                            id="ownership-verification-code">
+                                                            saga-verification=abc123def456
+                                                        </span>
+                                                        <button class="copy-button p-1 rounded hover:bg-gray-100"
+                                                            onclick="copyVerificationCode()">
+                                                            <i class="fas fa-copy text-gray-500"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td class="py-2 px-3">3600</td>
+                                                <td class="py-2 px-3">
+                                                    <span
+                                                        class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">Required</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Email Configuration Records -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-3">Email Configuration (Optional)</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="text-left py-2 px-3 font-medium text-gray-600">Type</th>
+                                                <th class="text-left py-2 px-3 font-medium text-gray-600">Name/Host</th>
+                                                <th class="text-left py-2 px-3 font-medium text-gray-600">Value</th>
+                                                <th class="text-left py-2 px-3 font-medium text-gray-600">Priority</th>
+                                                <th class="text-left py-2 px-3 font-medium text-gray-600">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-t">
+                                                <td class="py-2 px-3 font-mono">MX</td>
+                                                <td class="py-2 px-3">@</td>
+                                                <td class="py-2 px-3 font-mono">mail.saga.io</td>
+                                                <td class="py-2 px-3">10</td>
+                                                <td class="py-2 px-3">
+                                                    <span
+                                                        class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">Optional</span>
+                                                </td>
+                                            </tr>
+                                            <tr class="border-t">
+                                                <td class="py-2 px-3 font-mono">CNAME</td>
+                                                <td class="py-2 px-3">mail</td>
+                                                <td class="py-2 px-3 font-mono">mail.saga.io</td>
+                                                <td class="py-2 px-3">-</td>
+                                                <td class="py-2 px-3">
+                                                    <span
+                                                        class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">Optional</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                            <p class="text-sm text-gray-600">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                                <strong>Tip:</strong> Most DNS providers require you to enter only the record value
+                                without quotes.
+                                If you're unsure, consult your DNS provider's documentation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Verification Status Tab -->
+                    <div id="verification-status-tab" class="verification-tab-content mt-6 hidden">
+                        <h3 class="font-semibold text-green-600 mb-4">VERIFICATION STATUS</h3>
+
+                        <div class="space-y-4">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-medium text-gray-900">Domain Ownership</h4>
+                                    <span class="text-sm text-yellow-600 bg-yellow-100 px-2 py-1 rounded"
+                                        id="ownership-status">
+                                        Pending Verification
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">Checking for TXT record:
+                                    saga-verification=abc123def456</p>
+                                <div class="flex items-center space-x-2">
+                                    <button class="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                                        onclick="checkDomainVerification()">
+                                        <i class="fas fa-sync mr-1"></i>
+                                        Check Now
+                                    </button>
+                                    <span class="text-xs text-gray-500">Last checked: Never</span>
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-medium text-gray-900">Email Configuration</h4>
+                                    <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded" id="email-status">
+                                        Not Configured
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">Optional: Configure MX records for email hosting
+                                </p>
+                                <button class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                                    onclick="checkEmailConfiguration()">
+                                    <i class="fas fa-envelope mr-1"></i>
+                                    Check Email Setup
+                                </button>
+                            </div>
+
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-medium text-gray-900">SSL Certificate</h4>
+                                    <span class="text-sm text-green-600 bg-green-100 px-2 py-1 rounded" id="ssl-status">
+                                        Active
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">SSL certificate is automatically managed</p>
+                                <div class="text-xs text-gray-500">
+                                    <p>Issued by: Let's Encrypt</p>
+                                    <p>Expires: March 15, 2024</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-6 border-t">
+                    <button type="button"
+                        class="modal-close px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Close
+                    </button>
+                    <button type="button" class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                        onclick="verifyDomain()">
+                        <i class="fas fa-check mr-2"></i>
+                        Verify Domain
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+              <!-- Domain Management -->
+              <div id="domain-content" class="space-y-6 hidden">
+                <!-- Domain Management content will be loaded by JavaScript -->
+              </div>
+
+              <!-- Drive Admin Settings -->
+              <div id="drive-content" class="space-y-6 hidden">
+                <!-- Drive Admin Settings content will be loaded by JavaScript -->
+              </div>
+
+              <!-- Chat Meet Admin Settings -->
+              <div id="chat-content" class="space-y-6 hidden">
+                <!-- Chat Meet Admin Settings content will be loaded by JavaScript -->
+              </div>
+
+              <!-- Calendar Admin Settings -->
+              <div id="calendar-content" class="space-y-6 hidden">
+                <!-- Calendar Admin Settings content will be loaded by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Info Modal -->
+  <div id="info-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 hidden">
+    <div class="w-full max-w-md transform rounded-lg bg-white p-6 shadow-xl transition-all duration-200 dark:bg-gray-800">
+      <div class="flex items-center justify-between">
+        <h3 id="modal-title" class="text-lg font-medium text-gray-900 dark:text-white">Information</h3>
+        <button id="close-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+          </svg>
+          <span class="sr-only">Close</span>
+        </button>
+      </div>
+
+      <div class="mt-4">
+        <p id="modal-description" class="text-sm text-gray-600 dark:text-gray-300"></p>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button id="modal-ok" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 bg-slate-900 text-slate-50 hover:bg-slate-900/90 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90 h-10 px-4 py-2">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-4 right-4 z-50 max-w-xs transform rounded-lg bg-white p-4 shadow-lg transition-all duration-200 dark:bg-gray-800 notification-exit">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      <div class="ml-3 w-0 flex-1">
+        <p id="toast-title" class="text-sm font-medium text-gray-900 dark:text-white">Success</p>
+        <p id="toast-description" class="mt-1 text-sm text-gray-500 dark:text-gray-400">Your changes have been saved.</p>
+      </div>
+      <div class="ml-4 flex-shrink-0 flex">
+        <button id="close-toast" class="inline-flex text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          <span class="sr-only">Close</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
